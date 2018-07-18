@@ -1,0 +1,52 @@
+#!/bin/sh
+
+fancy_echo "------- Setting Up Applications, dependencies, and dotfiles -------"
+
+# homebrew installations
+brew bundle --file=- <<EOF
+  tap "homebrew/bundle"
+  tap "homebrew/core"
+  brew "openssl"
+  brew "asdf"
+  brew "git"
+  brew "mas"
+  brew "node"
+  brew "rcm"
+  brew "tree"
+  brew "zsh"
+  brew "zsh-syntax-highlighting"
+  # for dotfiles
+  tap "thoughtbot/formulae"
+  brew "mas" # Apple App Store integration
+EOF
+
+# install Apps From App Store
+mas "Affinity Designer", id: 824171161
+mas "Affinity Photo", id: 824183456
+mas "Final Cut Pro", id: 424389933
+mas "iA Writer", id: 775737590
+mas "iMovie", id: 408981434
+mas "Keynote", id: 409183694
+mas "Kindle", id: 405399194
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "Rested", id: 421879749
+mas "Sip", id: 507257563
+mas "Twitter", id: 409789998
+mas "Xcode", id: 497799835
+
+# upgrade existing apps
+mas upgrade
+
+# gems
+#gem_install_or_update "middleman"
+
+# bring in or pull from Thoughtbot's dotfiles
+if [ ! -d "$HOME/dotfiles" ]; then
+  git clone git://github.com/thoughtbot/dotfiles.git ~/dotfiles
+else
+  git -C ~/dotfiles pull origin master
+fi
+
+# source dotfiles
+env RCRC=$HOME/dotfiles/rcrc rcup
